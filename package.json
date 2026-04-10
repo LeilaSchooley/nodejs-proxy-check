@@ -1,0 +1,31 @@
+{
+  "name": "proxy-checker",
+  "version": "2.0.0",
+  "description": "Check HTTP, HTTPS, SOCKS4 and SOCKS5 proxy servers with timeout support, Promise/async API and concurrency control.",
+  "main": "index.js",
+  "engines": {
+    "node": ">=14"
+  },
+  "author": "Sébastien Castiel <sebastien.castiel@gmail.com>",
+  "homepage": "https://github.com/scastiel/node-proxy-checker",
+  "license": "LGPL",
+  "keywords": [
+    "proxy",
+    "checker",
+    "proxy server",
+    "proxies",
+    "socks",
+    "socks4",
+    "socks5",
+    "https"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/scastiel/node-proxy-checker.git"
+  },
+  "dependencies": {
+    "axios": "^1.15.0",
+    "https-proxy-agent": "^9.0.0",
+    "socks-proxy-agent": "^10.0.0"
+  }
+}
