@@ -1,5 +1,5 @@
 {
-  "name": "proxy-checker",
+  "name": "proxy-checker-modern",
   "version": "2.0.0",
   "description": "Check HTTP, HTTPS, SOCKS4 and SOCKS5 proxy servers with timeout support, Promise/async API and concurrency control.",
   "main": "index.js",
