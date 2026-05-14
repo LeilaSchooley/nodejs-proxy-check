@@ -1,50 +1,98 @@
 # proxy-checker
 
-*proxy-checker* is a Node.js module you can use to check if proxies from
-a big list are working.
+`proxy-checker` is a small Node.js module for verifying whether proxy servers are working.
 
-For example, let's say you want to connect to the website *example.com*, but it
-blocks requests from your IP. So you search on the Internet a few proxy servers
-to use to connect to this website. The problem is that a lot of proxies you can
-find are not working, or maybe they are already blocked by *example.com*.
+It supports:
 
-With *proxy-checker*, you can test big lists of proxy servers to see if they
-work to send requests to a website.
+- HTTP and HTTPS proxies
+- SOCKS4 and SOCKS5 proxies
+- proxy authentication with username/password
+- request timeouts
+- concurrent batch checks from a file
 
-## Example
+## Install
 
-To install the module: `npm install proxy-checker`
-
-```javascript
-var proxyChecker = require('proxy-checker');
-
-proxyChecker.checkProxiesFromFile(
-	// The path to the file containing proxies
-	'/path/to/proxys.txt',
-	{
-		// the complete URL to check the proxy
-		url: 'http://www.example.com',
-		// an optional regex to check for the presence of some text on the page
-		regex: /Example Domain/
-	},
-	// Callback function to be called after the check
-	function(host, port, ok, statusCode, err) {
-		console.log(host + ':' + port + ' => '
-			+ ok + ' (status: ' + statusCode + ', err: ' + err + ')');
-	}
-);
+```bash
+npm install proxy-checker
 ```
 
-The file you pass as first parameter contains the proxy servers to test. Here is
-an example:
+## Usage
 
-```
-123.234.321.32:80
-12.234.21.243:8080
-132.34.212.4:3128
-#127.32.76.123:80 <= This line will be ignored
+### Single proxy check
+
+```js
+const { checkProxy } = require('./index');
+
+checkProxy('1.2.3.4', 8080, {
+  url: 'https://httpbin.org/ip',
+  type: 'http',
+  timeout: 5000,
+  username: 'user',
+  password: 'pass',
+})
+  .then(result => console.log(result))
+  .catch(console.error);
 ```
 
-Note that thanks to the [Readline](http://nodejs.org/api/readline.html) API,
-the file is read line by line, so if your file contains thousands of lines it
-shouldn't be an issue.
+### Batch check from a file
+
+```js
+const { checkProxiesFromFile } = require('./index');
+
+checkProxiesFromFile('proxies.txt', {
+  url: 'https://httpbin.org/ip',
+  timeout: 8000,
+  concurrency: 10,
+})
+  .then(results => console.log(results))
+  .catch(console.error);
+```
+
+## Proxy file format
+
+Each proxy should be on its own line. Supported formats:
+
+```text
+host:port
+host:port:type
+host:port:username:password
+host:port:type:username:password
+```
+
+Where `type` is one of:
+
+- `http`
+- `https`
+- `socks4`
+- `socks5`
+
+Example:
+
+```text
+1.2.3.4:8080
+5.6.7.8:1080:socks5
+10.0.0.1:3128:myuser:mypass
+11.22.33.44:8080:http:myuser:mypass
+```
+
+Lines starting with `#` are ignored as comments.
+
+## Result shape
+
+Each check returns an object with:
+
+- `host`
+- `port`
+- `ok` (boolean)
+- `statusCode`
+- `err`
+
+A `407` status means the proxy requires authentication.
+
+## Example script
+
+Run the included `example.js` script to quickly test a single proxy and a file list:
+
+```bash
+node example.js
+```
